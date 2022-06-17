@@ -2,6 +2,8 @@ require 'src/Dependencies'
 
 function love.load() 
 
+	love.window.setTitle(GAME_TITLE)
+
 	love.graphics.setDefaultFilter('nearest', 'nearest')
 
 	-- Setting up push ( resolution-handling library )
@@ -11,9 +13,12 @@ function love.load()
 		resizable = true
 	})
 
-	love.keyboard.keysPressed = {}
-
 	player = Player()
+
+	titleFont = love.graphics.newFont('fonts/edunline.ttf', 32)
+	tutorialFont = love.graphics.newFont('fonts/edunline.ttf', 16)
+
+	state = 'start'
 
 end
 
@@ -29,7 +34,13 @@ function love.keypressed(key)
 
 	if(key == 'escape') then 
 
-		love.event.quit()
+		state = 'pause'
+
+	end
+
+	if(key == 'enter') then 
+
+		state = 'play'
 
 	end
 
@@ -40,17 +51,39 @@ function love.update(dt)
 
 	player:update(dt)
 
-
-
 end
 
 function love.draw() 
 
 	push:start()
 
-	love.graphics.printf("Hello World", 0, VIRTUAL_HEIGHT/2-6, VIRTUAL_WIDTH, "center")
+	love.graphics.clear(255, 255, 0)
 
 	player:render()
+
+
+	if(state == 'start') then
+		love.graphics.setColor(255,0,255)
+		love.graphics.setFont(titleFont)
+		love.graphics.printf(GAME_TITLE, 0, 56, VIRTUAL_WIDTH, "center")
+
+		if math.floor(love.timer.getTime()) % 2 == 0 then
+    		love.graphics.setFont(tutorialFont)
+			love.graphics.printf("Press Enter to begin", 0, 56+48, VIRTUAL_WIDTH, "center")
+  		end
+	end
+
+	if(state == 'pause') then 
+
+		-- Implement pause state
+
+	end
+
+	if state == 'play' then 
+
+		-- implement new play state
+
+	end
 
 	push:finish()
 

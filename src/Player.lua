@@ -2,11 +2,11 @@ Player = Class{}
 
 function Player:init() 
 
-	self.width = 50
-	self.height = 100
+	self.width = 100
+	self.height = 10
 
 	self.x = VIRTUAL_WIDTH / 2 - self.width/2
-	self.y = VIRTUAL_HEIGHT - 16 
+	self.y = VIRTUAL_HEIGHT - self.height 
 
 	-- dx stands for delta x which is speed
 	self.dx = 60
@@ -45,8 +45,8 @@ end
 
 function Player:render() 
 
-	-- Setting color to light blue
-	love.graphics.setColor(0, 0, 100)
+	-- Setting color to purple
+	love.graphics.setColor(255, 0, 255)
 
 	love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 
