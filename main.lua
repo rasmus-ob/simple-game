@@ -11,6 +11,8 @@ function love.load()
 		resizable = true
 	})
 
+	love.keyboard.keysPressed = {}
+
 end
 
 -- Setting up so resizing the screen works with push
@@ -18,6 +20,22 @@ function love.resize(w, h)
 
 	push:resize(w, h)
 
+end
+
+-- Getting input (storing it in 'love.keyboard.keysPressed' becuase we want to reach the keys pressed in other files)
+function love.keypressed(key) 
+
+	love.keyboard.keysPressed[key] = true
+
+end
+
+-- Function to call to check input
+function love.keyboard.wasPressed(key)
+    if love.keyboard.keysPressed[key] then
+        return true
+    else
+        return false
+    end
 end
 
 function love.update() end
