@@ -13,6 +13,8 @@ function love.load()
 
 	love.keyboard.keysPressed = {}
 
+	player = Player()
+
 end
 
 -- Setting up so resizing the screen works with push
@@ -25,26 +27,30 @@ end
 -- Getting input (storing it in 'love.keyboard.keysPressed' becuase we want to reach the keys pressed in other files)
 function love.keypressed(key) 
 
-	love.keyboard.keysPressed[key] = true
+	if(key == 'escape') then 
 
+		love.event.quit()
+
+	end
+
+	
 end
 
--- Function to call to check input
-function love.keyboard.wasPressed(key)
-    if love.keyboard.keysPressed[key] then
-        return true
-    else
-        return false
-    end
-end
+function love.update(dt) 
 
-function love.update() end
+	player:update(dt)
+
+
+
+end
 
 function love.draw() 
 
 	push:start()
 
 	love.graphics.printf("Hello World", 0, VIRTUAL_HEIGHT/2-6, VIRTUAL_WIDTH, "center")
+
+	player:render()
 
 	push:finish()
 
