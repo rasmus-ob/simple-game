@@ -4,10 +4,12 @@ function Ball:init()
 
 	self.width = 10
 	self.height = 10
-
+	math.randomseed(os.time())
 	self.x = math.random(10, VIRTUAL_WIDTH - self.width - 10)
 
 	self.y = math.random(0 - self.height - 10)
+
+	self.speed = math.random(1, 1.5) 
 
 
 end
@@ -23,6 +25,6 @@ end
 
 function Ball:update() 
 
-	self.y = self.y + 1
+	self.y = self.y + self.speed
 
 end

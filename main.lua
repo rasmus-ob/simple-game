@@ -22,9 +22,14 @@ function love.load()
 
 	state = 'start'
 
-	timer = 0
+	spawnTimer = 0
 
 	points = 0
+
+	nextLevel = 10
+
+	pointsRemover = 1
+
 end
 
 -- Setting up so resizing the screen works with push
@@ -55,6 +60,34 @@ function love.keypressed(key)
 
 			state = 'start'
 			player:reset()
+			balls = {}
+			points = 0
+
+		end
+
+	end
+
+	if state == 'dead' then 
+
+		if(key == 'return') then 
+
+			state = 'play'
+			player:reset()
+			balls = {}
+			points = 0
+
+		end
+
+	end
+
+	if state == 'win' then 
+
+		if(key == 'return') then 
+
+			state = 'play'
+			player:reset()
+			balls = {}
+			points = 0
 
 		end
 
@@ -63,30 +96,28 @@ function love.keypressed(key)
 	
 end
 
-nextLevel = 10
 function love.update(dt) 
-
-	player:update(dt)
 
 
 	if state == 'play' then 
+
+		player:update(dt)
 
 		if points == nextLevel then 
 			
 			player:levelUp()
 
 			nextLevel = nextLevel + 10
+			pointsRemover = pointsRemover + 2
 
 			-- TODO Implement levelUp Screen
 			-- TODO Implement harder blocks
 
 		end
 
-		if points == 100 then 
+		if points == 50 then 
 
 			state = 'win'
-
-			-- TODO Implement win state
 
 		end
 
@@ -94,19 +125,19 @@ function love.update(dt)
 
 			ball:update()
 
-			if ball.y > VIRTUAL_HEIGHT + 100 then
+			if ball.y > VIRTUAL_HEIGHT + ball.height then
 
 				table.remove(balls, k)
 
-				points = points - 5
+				points = points - pointsRemover
 
 			end
 
-			if(points < 0) then 
-
-				state = 'death'
-
-				-- TODO Implement death state
+			if points < 0 then
+			 	player:reset()
+				balls = {}
+				state = 'dead'
+				points = 0
 
 			end
 
@@ -122,11 +153,11 @@ function love.update(dt)
 		end 
 
 
-		timer = timer + dt
+		spawnTimer = spawnTimer + dt
 
-	    if timer >= 2 then
+	    if spawnTimer >= 2 then
 	        table.insert(balls, Ball())
-	        timer = 0
+	        spawnTimer = 0
 	    end
 
 
@@ -140,10 +171,9 @@ function love.draw()
 
 	love.graphics.clear(0, 0, 0)
 
-	player:render()
 
-
-	if(state == 'start') then
+	if state == 'start' then
+		player:render()
 		love.graphics.setColor(255, 255, 255)
 		love.graphics.setFont(titleFont)
 		love.graphics.printf(GAME_TITLE, 0, 56, VIRTUAL_WIDTH, "center")
@@ -156,6 +186,8 @@ function love.draw()
 
 	if state == 'play' then 
 
+		player:render()
+
 		for k, ball in pairs(balls) do 
 
 			ball:render()
@@ -164,6 +196,39 @@ function love.draw()
 
 		love.graphics.setFont(tutorialFont)
 		love.graphics.printf("Points: "..points, 0, 56+48, VIRTUAL_WIDTH, "center")
+
+	end
+
+	if state == 'dead' then 
+		love.graphics.setColor(255, 0, 0)
+		love.graphics.setFont(titleFont)
+		love.graphics.printf("You Died!", 0, 56+32, VIRTUAL_WIDTH, "center")
+
+
+		love.graphics.setFont(tutorialFont)
+		love.graphics.printf("Press Enter to restart", 0, 56+48+32, VIRTUAL_WIDTH, "center")
+
+
+		love.graphics.setColor(255, 255, 255)
+		love.graphics.setFont(tutorialFont)
+		love.graphics.printf("Points: " .. points, 0, 56+48+32+32, VIRTUAL_WIDTH, "center")
+
+	end
+
+	if state == 'win' then 
+		love.graphics.setColor(255, 255, 0)
+		love.graphics.setFont(titleFont)
+		love.graphics.printf("Congratulations you won!", 0, 56+16, VIRTUAL_WIDTH, "center")
+
+
+		love.graphics.setFont(tutorialFont)
+		love.graphics.printf("Press Enter to restart", 0, 56+48+16, VIRTUAL_WIDTH, "center")
+
+
+		love.graphics.setColor(255, 255, 255)
+		love.graphics.setFont(tutorialFont)
+		love.graphics.printf("Points: " .. points, 0, 56+48+32+16, VIRTUAL_WIDTH, "center")
+		points = 0
 
 	end
 
