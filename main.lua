@@ -37,12 +37,19 @@ function love.load()
 	soundExplosion2 = love.audio.newSource("sound/explosion2.wav", "static")
 	soundExplosion3 = love.audio.newSource("sound/explosion3.wav", "static")
 
+	soundUpdatedDifficulty = love.audio.newSource("sound/updatedDifficulty.wav", "static")
+
 	music = love.audio.newSource("sound/music.mp3", "static")
 
     music:setLooping(true)
     music:play()
 
-    levelUpScreen = true
+    levelUpTextTimer = 0
+    levelUpScreen = false
+
+    updatedDifficultyTextTimer = 0
+    updatedDifficulty = false
+
 
 
 end
@@ -89,6 +96,7 @@ function love.keypressed(key)
 			state = 'play'
 			player:reset()
 			balls = {}
+			nextLevel = 0
 			points = 0
 
 		end
@@ -102,6 +110,7 @@ function love.keypressed(key)
 			state = 'play'
 			player:reset()
 			balls = {}
+			nextLevel = 0
 			points = 0
 
 		end
@@ -121,20 +130,67 @@ function love.update(dt)
 		if points == nextLevel then 
 			
 			player:levelUp()
-
-			nextLevel = nextLevel + 10
+			if nextLevel >= 30 then 
+				nextLevel = nextLevel + 11
+			else 
+				nextLevel = nextLevel + 10
+			end
 			pointsRemover = pointsRemover + 2
 
 			levelUpScreen = true
-			-- TODO Implement harder blocks
 
 			soundPowerup:play()
 
 		end
 
+		if(nextLevel >= 30) then 
+
+			spawnTimer = spawnTimer + dt
+
+		end
+
+		if nextLevel == 31 then 
+
+			updatedDifficulty = true
+			soundUpdatedDifficulty:play()
+			nextLevel = nextLevel - 1
+
+		end
+
+		if nextLevel >= 40 then 
+
+			spawnTimer = spawnTimer + dt
+
+		end
+
+		if nextLevel == 41 then 
+
+			updatedDifficulty = true
+			soundUpdatedDifficulty:play()
+			nextLevel = nextLevel - 1
+
+		end
+
+		if nextLevel >= 50 then 
+
+			spawnTimer = spawnTimer + dt
+
+		end
+
+		if nextLevel == 51 then 
+
+			updatedDifficulty = true
+			soundUpdatedDifficulty:play()
+			nextLevel = nextLevel - 1
+
+		end
+
+		
+
 		if points == 50 then 
 
 			state = 'win'
+			levelUpScreen = false
 
 		end
 
@@ -204,10 +260,28 @@ function love.update(dt)
 	        spawnTimer = 0
 	    end
 
+	    if levelUpScreen then 
+	    	levelUpTextTimer = levelUpTextTimer + dt
+
+			if levelUpTextTimer >= 3.5 then 
+				levelUpScreen = false
+				levelUpTextTimer = 0
+			end
+		end 
+
+		if updatedDifficulty then 
+	    	updatedDifficultyTextTimer = updatedDifficultyTextTimer + dt
+
+			if updatedDifficultyTextTimer >= 3.5 then 
+				updatedDifficulty = false
+				updatedDifficultyTextTimer = 0
+			end
+		end 
 
 	end
+end	
 
-end
+
 
 function love.draw() 
 
@@ -218,7 +292,15 @@ function love.draw()
 	if levelUpScreen then 
 		love.graphics.setColor(255, 255, 0)
 		love.graphics.setFont(tutorialFont)
-		love.graphics.printf("Level UP!", 0, VIRTUAL_HEIGHT - 48, VIRTUAL_WIDTH, "center")
+		love.graphics.printf("Level UP!", 0, VIRTUAL_HEIGHT - 64, VIRTUAL_WIDTH, "center")
+		love.graphics.printf("Extra " .. player.lastPowerUp, 0, VIRTUAL_HEIGHT - 48, VIRTUAL_WIDTH, "center")
+		love.graphics.setColor(255, 255, 255)
+	end
+
+	if updatedDifficulty then 
+		love.graphics.setColor(255, 0, 0)
+		love.graphics.setFont(tutorialFont)
+		love.graphics.printf("Difficulty Updated!", 0, 0 + 32, VIRTUAL_WIDTH, "center")
 		love.graphics.setColor(255, 255, 255)
 	end
 
@@ -260,10 +342,6 @@ function love.draw()
 		love.graphics.printf("Press Enter to restart", 0, 56+48+32, VIRTUAL_WIDTH, "center")
 
 
-		love.graphics.setColor(255, 255, 255)
-		love.graphics.setFont(tutorialFont)
-		love.graphics.printf("Points: " .. points, 0, 56+48+32+32, VIRTUAL_WIDTH, "center")
-
 	end
 
 	if state == 'win' then 
@@ -274,12 +352,6 @@ function love.draw()
 
 		love.graphics.setFont(tutorialFont)
 		love.graphics.printf("Press Enter to restart", 0, 56+48+16, VIRTUAL_WIDTH, "center")
-
-
-		love.graphics.setColor(255, 255, 255)
-		love.graphics.setFont(tutorialFont)
-		love.graphics.printf("Points: " .. points, 0, 56+48+32+16, VIRTUAL_WIDTH, "center")
-		points = 0
 
 	end
 
