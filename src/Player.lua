@@ -46,11 +46,54 @@ end
 function Player:render() 
 
 	-- Setting color to purple
-	love.graphics.setColor(255, 0, 255)
+	love.graphics.setColor(255, 255, 255)
 
 	love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 
-	-- Reseting color
-	love.graphics.setColor(255, 255, 255)
+end
+
+function Player:levelUp() 
+
+	-- 50% for every stat
+	local whatStat = math.random(0, 1)
+
+	print(whatStat)
+
+	if whatStat == 0 then 
+
+		-- Boosts velocity with 20%
+		self.dx = self.dx * 1.2
+
+	elseif whatStat == 1 then 
+
+		-- Creates a backup of self.width
+		local beforeLevelUpWidth = self.width
+	
+		-- Boosts width with 20%
+		self.width = self.width * 1.2
+
+		-- Creates the offset to x (makes it look like it grows in width on both sides)
+		local offsetX = (self.width - beforeLevelUpWidth)/2
+	
+		-- Adding offset
+		self.x = self.x - offsetX
+
+	end
+
+
+end
+
+function Player:reset() 
+
+	-- Reseting Values
+
+	self.width = 100
+	-- self.height = 10
+
+	self.x = VIRTUAL_WIDTH / 2 - self.width/2
+	self.y = VIRTUAL_HEIGHT - self.height 
+
+	self.dx = 60
+
 
 end

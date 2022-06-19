@@ -15,11 +15,16 @@ function love.load()
 
 	player = Player()
 
+	balls = {}
+
 	titleFont = love.graphics.newFont('fonts/edunline.ttf', 32)
 	tutorialFont = love.graphics.newFont('fonts/edunline.ttf', 16)
 
 	state = 'start'
 
+	timer = 0
+
+	points = 0
 end
 
 -- Setting up so resizing the screen works with push
@@ -32,24 +37,100 @@ end
 -- Getting input (storing it in 'love.keyboard.keysPressed' becuase we want to reach the keys pressed in other files)
 function love.keypressed(key) 
 
-	if(key == 'escape') then 
+	
 
-		state = 'pause'
+	if(state == 'start') then
+
+		if(key == 'return') then 
+
+			state = 'play'
+
+		end
 
 	end
 
-	if(key == 'enter') then 
+	if state == 'play' then 
 
-		state = 'play'
+		if(key == 'r') then 
+
+			state = 'start'
+			player:reset()
+
+		end
 
 	end
 
 	
 end
 
+nextLevel = 10
 function love.update(dt) 
 
 	player:update(dt)
+
+
+	if state == 'play' then 
+
+		if points == nextLevel then 
+			
+			player:levelUp()
+
+			nextLevel = nextLevel + 10
+
+			-- TODO Implement levelUp Screen
+			-- TODO Implement harder blocks
+
+		end
+
+		if points == 100 then 
+
+			state = 'win'
+
+			-- TODO Implement win state
+
+		end
+
+		for k, ball in pairs(balls) do 
+
+			ball:update()
+
+			if ball.y > VIRTUAL_HEIGHT + 100 then
+
+				table.remove(balls, k)
+
+				points = points - 5
+
+			end
+
+			if(points < 0) then 
+
+				state = 'death'
+
+				-- TODO Implement death state
+
+			end
+
+			if ball.y + ball.height - 2 >= player.y and ball.y + ball.height - 2 <= player.y + player.height and ball.x + ball.width >= player.x and ball.x <= player.x + player.width then
+
+				points = points + 1
+
+				table.remove(balls, k)
+
+			end
+
+
+		end 
+
+
+		timer = timer + dt
+
+	    if timer >= 2 then
+	        table.insert(balls, Ball())
+	        timer = 0
+	    end
+
+
+	end
 
 end
 
@@ -57,13 +138,13 @@ function love.draw()
 
 	push:start()
 
-	love.graphics.clear(255, 255, 0)
+	love.graphics.clear(0, 0, 0)
 
 	player:render()
 
 
 	if(state == 'start') then
-		love.graphics.setColor(255,0,255)
+		love.graphics.setColor(255, 255, 255)
 		love.graphics.setFont(titleFont)
 		love.graphics.printf(GAME_TITLE, 0, 56, VIRTUAL_WIDTH, "center")
 
@@ -73,15 +154,16 @@ function love.draw()
   		end
 	end
 
-	if(state == 'pause') then 
-
-		-- Implement pause state
-
-	end
-
 	if state == 'play' then 
 
-		-- implement new play state
+		for k, ball in pairs(balls) do 
+
+			ball:render()
+
+		end 
+
+		love.graphics.setFont(tutorialFont)
+		love.graphics.printf("Points: "..points, 0, 56+48, VIRTUAL_WIDTH, "center")
 
 	end
 
