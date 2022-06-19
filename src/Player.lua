@@ -61,8 +61,8 @@ function Player:levelUp()
 
 	if whatStat == 0 then 
 
-		-- Boosts velocity with 20%
-		self.dx = self.dx * 1.2
+		-- Boosts velocity with 50%
+		self.dx = self.dx * 1.5
 
 	elseif whatStat == 1 then 
 

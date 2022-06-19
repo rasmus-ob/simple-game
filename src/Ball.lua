@@ -9,6 +9,8 @@ function Ball:init()
 
 	self.y = math.random(0 - self.height - 10)
 
+	self.speed = math.random(1, 1.5) 
+
 
 end
 
@@ -23,6 +25,6 @@ end
 
 function Ball:update() 
 
-	self.y = self.y + 1
+	self.y = self.y + self.speed
 
 end

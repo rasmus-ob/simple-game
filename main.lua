@@ -27,6 +27,9 @@ function love.load()
 	points = 0
 
 	nextLevel = 10
+
+	pointsRemover = 1
+
 end
 
 -- Setting up so resizing the screen works with push
@@ -57,6 +60,8 @@ function love.keypressed(key)
 
 			state = 'start'
 			player:reset()
+			balls = {}
+			points = 0
 
 		end
 
@@ -67,6 +72,22 @@ function love.keypressed(key)
 		if(key == 'return') then 
 
 			state = 'play'
+			player:reset()
+			balls = {}
+			points = 0
+
+		end
+
+	end
+
+	if state == 'win' then 
+
+		if(key == 'return') then 
+
+			state = 'play'
+			player:reset()
+			balls = {}
+			points = 0
 
 		end
 
@@ -87,17 +108,16 @@ function love.update(dt)
 			player:levelUp()
 
 			nextLevel = nextLevel + 10
+			pointsRemover = pointsRemover + 2
 
 			-- TODO Implement levelUp Screen
 			-- TODO Implement harder blocks
 
 		end
 
-		if points == 100 then 
+		if points == 50 then 
 
 			state = 'win'
-
-			-- TODO Implement win state
 
 		end
 
@@ -109,7 +129,7 @@ function love.update(dt)
 
 				table.remove(balls, k)
 
-				points = points - 5
+				points = points - pointsRemover
 
 			end
 
@@ -192,6 +212,23 @@ function love.draw()
 		love.graphics.setColor(255, 255, 255)
 		love.graphics.setFont(tutorialFont)
 		love.graphics.printf("Points: " .. points, 0, 56+48+32+32, VIRTUAL_WIDTH, "center")
+
+	end
+
+	if state == 'win' then 
+		love.graphics.setColor(255, 255, 0)
+		love.graphics.setFont(titleFont)
+		love.graphics.printf("Congratulations you won!", 0, 56+16, VIRTUAL_WIDTH, "center")
+
+
+		love.graphics.setFont(tutorialFont)
+		love.graphics.printf("Press Enter to restart", 0, 56+48+16, VIRTUAL_WIDTH, "center")
+
+
+		love.graphics.setColor(255, 255, 255)
+		love.graphics.setFont(tutorialFont)
+		love.graphics.printf("Points: " .. points, 0, 56+48+32+16, VIRTUAL_WIDTH, "center")
+		points = 0
 
 	end
 
