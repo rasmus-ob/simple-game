@@ -4,7 +4,7 @@ function Ball:init()
 
 	self.width = 10
 	self.height = 10
-
+	math.randomseed(os.time())
 	self.x = math.random(10, VIRTUAL_WIDTH - self.width - 10)
 
 	self.y = math.random(0 - self.height - 10)
