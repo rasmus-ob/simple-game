@@ -9,7 +9,7 @@ function Ball:init()
 
 	self.y = math.random(0 - self.height - 10)
 
-	self.speed = math.random(1, 1.5) 
+	self.speed = math.random(1, 1.4) 
 
 
 end

@@ -9,7 +9,9 @@ function Player:init()
 	self.y = VIRTUAL_HEIGHT - self.height 
 
 	-- dx stands for delta x which is speed
-	self.dx = 60
+	self.dx = 80
+
+	self.lastPowerUp = 'none'
 
 end
 
@@ -57,12 +59,11 @@ function Player:levelUp()
 	-- 50% for every stat
 	local whatStat = math.random(0, 1)
 
-	print(whatStat)
-
 	if whatStat == 0 then 
 
-		-- Boosts velocity with 50%
-		self.dx = self.dx * 1.5
+		-- Boosts velocity with 80%
+		self.dx = self.dx * 1.8
+		self.lastPowerUp = 'speed'
 
 	elseif whatStat == 1 then 
 
@@ -77,7 +78,7 @@ function Player:levelUp()
 	
 		-- Adding offset
 		self.x = self.x - offsetX
-
+		self.lastPowerUp = 'width'
 	end
 
 
