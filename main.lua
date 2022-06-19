@@ -1,5 +1,7 @@
 require 'src/Dependencies'
 
+-- TODO Implement music and sound
+
 function love.load() 
 
 	love.window.setTitle(GAME_TITLE)
@@ -30,6 +32,19 @@ function love.load()
 
 	pointsRemover = 1
 
+	soundPowerup = love.audio.newSource("sound/powerup.wav", "static")
+	soundExplosion1 = love.audio.newSource("sound/explosion.wav", "static")
+	soundExplosion2 = love.audio.newSource("sound/explosion2.wav", "static")
+	soundExplosion3 = love.audio.newSource("sound/explosion3.wav", "static")
+
+	music = love.audio.newSource("sound/music.mp3", "static")
+
+    music:setLooping(true)
+    music:play()
+
+    levelUpScreen = true
+
+
 end
 
 -- Setting up so resizing the screen works with push
@@ -44,9 +59,9 @@ function love.keypressed(key)
 
 	
 
-	if(state == 'start') then
+	if state == 'start' then
 
-		if(key == 'return') then 
+		if key == 'return' then 
 
 			state = 'play'
 
@@ -56,7 +71,7 @@ function love.keypressed(key)
 
 	if state == 'play' then 
 
-		if(key == 'r') then 
+		if key == 'r' then 
 
 			state = 'start'
 			player:reset()
@@ -69,7 +84,7 @@ function love.keypressed(key)
 
 	if state == 'dead' then 
 
-		if(key == 'return') then 
+		if key == 'return' then 
 
 			state = 'play'
 			player:reset()
@@ -82,7 +97,7 @@ function love.keypressed(key)
 
 	if state == 'win' then 
 
-		if(key == 'return') then 
+		if key == 'return' then 
 
 			state = 'play'
 			player:reset()
@@ -110,8 +125,10 @@ function love.update(dt)
 			nextLevel = nextLevel + 10
 			pointsRemover = pointsRemover + 2
 
-			-- TODO Implement levelUp Screen
+			levelUpScreen = true
 			-- TODO Implement harder blocks
+
+			soundPowerup:play()
 
 		end
 
@@ -119,6 +136,13 @@ function love.update(dt)
 
 			state = 'win'
 
+		end
+
+		if points < 0 then
+		 	player:reset()
+			balls = {}
+			state = 'dead'
+			points = 0
 		end
 
 		for k, ball in pairs(balls) do 
@@ -131,21 +155,41 @@ function love.update(dt)
 
 				points = points - pointsRemover
 
+				math.randomseed(os.time())
+
+				local random = math.random(1, 3)
+
+				if random == 1 then 
+					soundExplosion1:play()
+				elseif random == 2 then
+					soundExplosion2:play()
+
+				else 
+					soundExplosion3:play()
+				end
+
 			end
 
-			if points < 0 then
-			 	player:reset()
-				balls = {}
-				state = 'dead'
-				points = 0
-
-			end
+			
 
 			if ball.y + ball.height - 2 >= player.y and ball.y + ball.height - 2 <= player.y + player.height and ball.x + ball.width >= player.x and ball.x <= player.x + player.width then
 
 				points = points + 1
 
 				table.remove(balls, k)
+
+				math.randomseed(os.time())
+
+				local random = math.random(1, 3)
+
+				if random == 1 then 
+					soundExplosion1:play()
+				elseif random == 2 then
+					soundExplosion2:play()
+
+				else 
+					soundExplosion3:play()
+				end
 
 			end
 
@@ -170,6 +214,13 @@ function love.draw()
 	push:start()
 
 	love.graphics.clear(0, 0, 0)
+
+	if levelUpScreen then 
+		love.graphics.setColor(255, 255, 0)
+		love.graphics.setFont(tutorialFont)
+		love.graphics.printf("Level UP!", 0, VIRTUAL_HEIGHT - 48, VIRTUAL_WIDTH, "center")
+		love.graphics.setColor(255, 255, 255)
+	end
 
 
 	if state == 'start' then
